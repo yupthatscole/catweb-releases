@@ -72,6 +72,7 @@ this started as a random idea and now i somehow have an actual browser.
 still working on it. don’t expect perfection.
 
 and if anything goes super duper wrong don’t sue me please (joke)
+
 -# mostly 
 
 meow 😸
