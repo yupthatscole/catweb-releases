@@ -1,4 +1,4 @@
-# catweb 🐈
+## catweb 🐈
 
 meow
 
@@ -45,9 +45,11 @@ this is the rendering engine im building myself.
 
 it’s cool but also very unfinished.
 
-PLEASE don’t sign into your accounts or enter sensitive information while using this engine.
+# PLEASE don’t sign into your accounts or enter sensitive information while using this engine.
 
-it’s still being tested and isn’t properly secured yet. use webview2 for normal browsing.
+it’s still being tested and isn’t properly secured yet.
+
+# use webview2 for normal browsing.
 
 # bugs
 
@@ -68,5 +70,8 @@ anyways
 this started as a random idea and now i somehow have an actual browser.
 
 still working on it. don’t expect perfection.
+
+and if anything goes super duper wrong don’t sue me please (joke)
+-# mostly 
 
 meow 😸
