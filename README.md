@@ -12,7 +12,7 @@ it’s purple, has a cat, blocks ads, and actually works (most of the time)
 * customizable themes and ui
 * webview2 for normal browsing
 * catweb native, my own rendering engine written in rust
-* silly settings (meow button coming soon 👀)
+* silly settings (meow button included)
 * a cat named tuft
 * can be set as your default browser on windows
 * other stuff im probably forgetting
@@ -21,7 +21,7 @@ it’s purple, has a cat, blocks ads, and actually works (most of the time)
 
 check the releases tab for the latest version.
 
-currently v0.0.3 beta, windows only.
+currently v0.0.6 beta, windows only.
 
 also, if you found this repo without me sending it to you, how tf did you get here??
 
