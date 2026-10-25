@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catweb</title>
+<meta name="description" content="Catweb is a small, purple, privacy-minded web browser for Windows, written in Rust by one beginner.">
+<link rel="icon" href="tuft-head.png">
+<style>
+  /* "Lavender soft", the same colors Catweb uses (assets/themes/lavender-*.toml). */
+  :root {
+    --bg: #1c1924; --panel: #24202e; --raised: #342d43;
+    --text: #ece9f2; --muted: #a49eb3; --accent: #a78bfa; --accent-ink: #1c1924;
+    --warn: #f0b35a;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #faf8ff; --panel: #f1edfa; --raised: #e6deff;
+      --text: #24202e; --muted: #6e6780; --accent: #7c5fcf; --accent-ink: #ffffff;
+      --warn: #9a5b00;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 0 16px 64px; }
+  a { color: var(--accent); }
+  h1 { font-size: 56px; margin: 8px 0 0; letter-spacing: -1px; }
+  h2 { font-size: 26px; margin: 56px 0 12px; }
+  .hero { text-align: center; padding: 56px 0 8px; }
+  .tagline { color: var(--muted); font-size: 20px; margin: 4px 0 28px; }
+
+  /* Tuft: one 80x72 cell of the spritesheet, shown at 2x with crisp pixels.
+     Row 1 is "idle"; hovering swaps to row 2, "happy". */
+  .tuft {
+    width: 160px; height: 144px; margin: 0 auto;
+    background: url(tuft-sprites.png) 0 0 / 640px 1152px no-repeat;
+    image-rendering: pixelated;
+    animation: idle 1.2s steps(4) infinite;
+  }
+  .tuft:hover { animation-name: happy; animation-duration: .6s; }
+  @keyframes idle  { from { background-position: 0 0; }      to { background-position: -640px 0; } }
+  @keyframes happy { from { background-position: 0 -144px; } to { background-position: -640px -144px; } }
+  @media (prefers-reduced-motion: reduce) { .tuft { animation: none; } }
+
+  .button {
+    display: inline-block; background: var(--accent); color: var(--accent-ink);
+    font-weight: 600; text-decoration: none; padding: 14px 28px; border-radius: 999px;
+  }
+  .button:hover { filter: brightness(1.08); }
+  .small { color: var(--muted); font-size: 15px; }
+  .card { background: var(--panel); border-radius: 12px; padding: 18px 22px; margin: 14px 0; }
+  .note { border-left: 4px solid var(--warn); }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  code, pre { font-family: Consolas, ui-monospace, monospace; font-size: 14px; }
+  pre { background: var(--raised); padding: 12px 14px; border-radius: 8px; overflow-x: auto; }
+  code.hash { word-break: break-all; }
+  .shots { display: grid; gap: 16px; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; border-radius: 10px; display: block; }
+  .shots figcaption { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  footer { text-align: center; color: var(--muted); font-size: 15px; margin-top: 64px; }
+</style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="tuft" role="img" aria-label="Tuft, Catweb's pixel cat, blinking"></div>
+    <h1>Catweb</h1>
+    <p class="tagline">a purple web browser for Windows, with a cat named Tuft.</p>
+    <a class="button" href="https://github.com/yupthatscole/catweb-releases/releases/latest/download/catweb.exe">Download for Windows</a>
+    <p class="small">Windows 10 or 11, 64-bit · one file, no installer needed ·
+      <a href="https://github.com/yupthatscole/catweb-releases/releases">all releases</a></p>
+  </section>
+
+  <h2>What it is</h2>
+  <p>Catweb is a browser I'm building in Rust while learning Rust. It's early and made by one person, so expect bugs.</p>
+  <p>Websites in Catweb run on <strong>WebView2</strong>, the same engine Microsoft Edge uses, so most sites work normally.
+    Catweb draws everything around the page itself: the tabs, address bar, settings, and Tuft.</p>
+  <p>There's also <strong>Catweb Native</strong>, my own engine written from scratch. It's an experimental side project.
+    Tabs using it are marked with an "Experimental" label. Please don't sign in to anything in those tabs.</p>
+
+  <h2>What it does</h2>
+  <ul>
+    <li>Blocks ads and trackers with a built-in shield (EasyList filters), with a toggle per site</li>
+    <li>Tries the secure (HTTPS) version of a site first, and strips common tracking bits from links</li>
+    <li>Private tabs that forget their cookies and history when you close them</li>
+    <li>Tabs in the title bar, bookmarks bar, history, downloads panel, find in page, zoom</li>
+    <li>Imports your Chrome bookmarks and history</li>
+    <li>Themes, accent colors, and "Silly Settings" (off by default, meow switches included)</li>
+    <li>Updates itself, and checks every update's signature before installing it</li>
+    <li>Can install itself to the Start menu and be your default browser</li>
+  </ul>
+
+  <h2>Privacy, honestly</h2>
+  <div class="card">
+    <p>Catweb has no accounts, analytics, or telemetry. On its own it only contacts:</p>
+    <ul>
+      <li>GitHub, once a day, to check for updates (you can turn this off in Settings)</li>
+      <li>websites you visit, to get their little icons (never in private tabs)</li>
+      <li>Microsoft SmartScreen, which checks for dangerous sites and downloads (on by default, can be turned off)</li>
+    </ul>
+    <p>Your history and bookmarks are stored on your PC in <code>%APPDATA%\Catweb</code>, not encrypted.
+      Catweb doesn't save passwords. Use the password manager you already trust.</p>
+    <p>Catweb is new and hasn't had an outside security audit. I wouldn't use it for banking yet.</p>
+  </div>
+
+  <section id="screens">
+  <h2>Screenshots</h2>
+  <div class="shots">
+    <!-- To add one: put the PNG in docs/screenshots/ with this name. Missing images hide themselves. -->
+    <figure><img src="screenshots/new-tab.png" alt="Catweb's new tab page with Tuft" onerror="this.parentNode.remove()"><figcaption>The new tab page</figcaption></figure>
+    <figure><img src="screenshots/browsing.png" alt="Catweb showing a website" onerror="this.parentNode.remove()"><figcaption>Browsing with the shield on</figcaption></figure>
+    <figure><img src="screenshots/settings.png" alt="Catweb's settings page" onerror="this.parentNode.remove()"><figcaption>Settings and themes</figcaption></figure>
+  </div>
+  </section>
+  <script>
+    // Hide the whole section until at least one screenshot has been added.
+    addEventListener("load", () => { if (!document.querySelector(".shots figure")) document.getElementById("screens").remove(); });
+  </script>
+
+  <h2>Before you run it</h2>
+  <div class="card note">
+    <p><strong>Windows will show a SmartScreen warning.</strong> Catweb isn't code-signed (that costs money every year),
+      so Windows doesn't recognize it. To run it anyway, click <em>More info</em>, then <em>Run anyway</em>.</p>
+    <p>If you'd rather check the file first, here's how:</p>
+    <ul>
+      <li><strong>VirusTotal:</strong> <span id="virustotal">report link coming soon</span></li>
+      <li><strong>Checksum:</strong> every release has a <code>catweb.exe.sha256</code> file next to the download.
+        In PowerShell, run this in your Downloads folder and compare the result with that file:</li>
+    </ul>
+    <pre>Get-FileHash .\catweb.exe -Algorithm SHA256</pre>
+    <p class="small">v0.0.9 catweb.exe SHA-256:<br>
+      <code class="hash">e4bc2daae84765f95b0ea8824e82e9d638524075c930fea577573e42b0de1ce8</code></p>
+  </div>
+
+  <h2>Found a bug?</h2>
+  <p><a href="https://github.com/yupthatscole/catweb-releases/issues">Open an issue</a> and say what you did and what happened.
+    Right-click a page and pick "Save a bug report about this page" to attach one. It removes sign-in tokens from the report, but please double-check it
+    doesn't include anything personal.</p>
+
+  <footer>made by cole · the source code is private for now · meow</footer>
+</main>
+</body>
+</html>
