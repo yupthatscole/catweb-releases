@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>New Tab</title>
 <meta name="description" content="Catweb's new tab page, for your phone: Tuft, a search box, and your shortcuts. Add it to your home screen.">
-
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Catweb">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,10 +13,9 @@
 <link rel="icon" href="icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
-  
   :root {
     --content: #1c1924; --text: #ece9f2; --muted: #a49eb3; --accent: #a78bfa;
-    --surface: #2d273a;  
+    --surface: #2d273a;
     --hover: #a49eb318;
   }
   @media (prefers-color-scheme: light) {
@@ -36,7 +34,6 @@
   }
   main { padding-top: max(24px, 10vh); }
 
-  
   .tuft {
     display: block; width: 80px; height: 72px; margin: 0 auto 10px; border: 0; padding: 0;
     background: url(../tuft-sprites.png) 0 0 / 320px 576px no-repeat transparent;
@@ -54,7 +51,7 @@
   .glass { position: absolute; left: 16px; top: 14px; width: 18px; height: 18px; }
   input {
     width: 100%; height: 100%; border: 0; background: transparent; color: var(--text);
-    font: inherit; font-size: 16px; /* 16px stops iPhone zooming in on tap */
+    font: inherit; font-size: 16px;
     padding: 0 20px 0 46px; outline: none; -webkit-appearance: none; caret-color: var(--accent);
   }
   input::placeholder { color: var(--muted); }
@@ -93,13 +90,12 @@
   <button class="tuft" id="tuft" aria-label="Tuft the cat"></button>
   <h1>Catweb</h1>
 
-  <form id="search" role="search">
+  <form id="search" role="search" action="https://www.google.com/search" method="get">
     <svg class="glass" viewBox="0 0 18 18" aria-hidden="true">
-      
       <circle cx="6.5" cy="6.5" r="5.3" fill="none" stroke="var(--muted)" stroke-width="2.3"/>
       <line x1="11" y1="11" x2="17.2" y2="17.2" stroke="var(--muted)" stroke-width="2.8"/>
     </svg>
-    <input type="search" id="q" placeholder="Search Google or type an address" autocomplete="off" autocapitalize="off" enterkeyhint="go" aria-label="Search Google or type an address">
+    <input type="search" id="q" name="q" placeholder="Search Google or type an address" autocomplete="off" autocapitalize="off" enterkeyhint="go" aria-label="Search Google or type an address">
   </form>
 
   <div class="tiles" id="tiles"></div>
@@ -109,7 +105,6 @@
 </main>
 
 <script>
- 
   const q = document.getElementById("q");
   document.getElementById("search").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -120,27 +115,23 @@
       ? (/^https?:\/\//i.test(text) ? text : "https://" + text)
       : "https://www.google.com/search?q=" + encodeURIComponent(text);
   });
-
- 
   const DEFAULTS = ["youtube.com", "google.com", "tiktok.com", "discord.com", "reddit.com"];
   const KEY = "catweb-start-shortcuts";
   function load() {
     try {
       const saved = JSON.parse(localStorage.getItem(KEY));
       if (Array.isArray(saved) && saved.every((s) => typeof s === "string")) return saved;
-    } catch (e) { 
+    } catch (e) { }
     return DEFAULTS.slice();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(shortcuts)); } catch (e) {} }
   let shortcuts = load();
-
-  
   function siteName(text) {
     text = text.trim();
     if (!/^[a-z]+:/i.test(text)) text = "https://" + text;
     try {
       const u = new URL(text);
-      if (u.protocol !== "https:" && u.protocol !== "http:") return null;  
+      if (u.protocol !== "https:" && u.protocol !== "http:") return null;
       return u.hostname.replace(/^www\./, "") || null;
     } catch (e) { return null; }
   }
@@ -150,8 +141,6 @@
     const b = document.createElement("span");
     b.className = "badge";
     b.textContent = site.charAt(0).toUpperCase();
-    
-
     const img = new Image();
     img.alt = "";
     img.onload = () => { if (img.naturalWidth > 1) b.replaceChildren(img); };
@@ -168,7 +157,6 @@
       name.className = "name";
       name.textContent = site;
       a.append(badge(site), name);
-     
       let timer, held = false;
       const remove = () => {
         held = true;
@@ -181,7 +169,7 @@
       a.addEventListener("click", (e) => { if (held) e.preventDefault(); });
       tilesEl.append(a);
     });
-    if (shortcuts.length < 10) {  
+    if (shortcuts.length < 10) {
       const add = document.createElement("button");
       add.className = "tile";
       add.type = "button";
@@ -205,10 +193,8 @@
     }
   }
   render();
-
-
   const ROW = { idle: 0, happy: 1 };
-  const FRAME_MS = { idle: [2200, 320, 320, 140], happy: [200, 200, 200, 200] };  
+  const FRAME_MS = { idle: [2200, 320, 320, 140], happy: [200, 200, 200, 200] };
   const tuft = document.getElementById("tuft");
   let mood = "idle", since = performance.now(), happyUntil = 0;
   function setMood(m) { if (m !== mood) { mood = m; since = performance.now(); } }
