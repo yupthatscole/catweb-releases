@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>New Tab</title>
+<meta name="description" content="Catweb's new tab page, for your phone: Tuft, a search box, and your shortcuts. Add it to your home screen.">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Catweb">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1c1924">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+  
+  :root {
+    --content: #1c1924; --text: #ece9f2; --muted: #a49eb3; --accent: #a78bfa;
+    --surface: #2d273a;  
+    --hover: #a49eb318;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --content: #ffffff; --text: #24202e; --muted: #6e6780; --accent: #7c5fcf;
+      --surface: #f1edf7; --hover: #6e678018;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
+  body {
+    background: var(--content); color: var(--text);
+    font: 14px/1.3 "Segoe UI", -apple-system, system-ui, sans-serif;
+    padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+    text-align: center;
+  }
+  main { padding-top: max(24px, 10vh); }
+
+  
+  .tuft {
+    display: block; width: 80px; height: 72px; margin: 0 auto 10px; border: 0; padding: 0;
+    background: url(../tuft-sprites.png) 0 0 / 320px 576px no-repeat transparent;
+    image-rendering: pixelated; cursor: pointer;
+  }
+  h1 { font-size: 36.4px; font-weight: 700; line-height: 1.2; margin: 0 0 22px; }
+
+  form {
+    position: relative; max-width: 560px; height: 46px; margin: 0 auto;
+    background: var(--surface); border-radius: 23px;
+    box-shadow: 0 3px 14px rgb(0 0 0 / 22%);
+  }
+  form:hover { box-shadow: 0 3px 14px rgb(0 0 0 / 31%); }
+  form:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .glass { position: absolute; left: 16px; top: 14px; width: 18px; height: 18px; }
+  input {
+    width: 100%; height: 100%; border: 0; background: transparent; color: var(--text);
+    font: inherit; font-size: 16px; /* 16px stops iPhone zooming in on tap */
+    padding: 0 20px 0 46px; outline: none; -webkit-appearance: none; caret-color: var(--accent);
+  }
+  input::placeholder { color: var(--muted); }
+  input::-webkit-search-cancel-button { display: none; }
+
+  .tiles {
+    display: grid; grid-template-columns: repeat(auto-fit, 112px); justify-content: center;
+    max-width: 560px; margin: 36px auto 28px;
+  }
+  .tile {
+    position: relative; height: 108px; padding: 12px 0 0; border: 0; background: none;
+    display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+    color: var(--text); text-decoration: none; font: inherit; font-size: 13px; cursor: pointer;
+    -webkit-touch-callout: none; user-select: none; -webkit-user-select: none;
+  }
+  .tile::before {
+    content: ""; position: absolute; inset: 4px; border-radius: 12px; background: transparent;
+  }
+  .tile:hover::before, .tile:active::before { background: var(--hover); }
+  .badge {
+    position: relative; display: grid; place-items: center; width: 56px; height: 56px;
+    margin: 0 auto 8px; border-radius: 12px; background: var(--surface);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+    color: var(--accent); font-size: 20px; font-weight: 700;
+  }
+  .badge img { width: 24px; height: 24px; }
+  .name { position: relative; display: block; padding: 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .about { color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+  .about:hover { color: var(--accent); }
+  .hint { color: var(--muted); font-size: 12px; margin: 14px 0 32px; }
+</style>
+</head>
+<body>
+<main>
+  <button class="tuft" id="tuft" aria-label="Tuft the cat"></button>
+  <h1>Catweb</h1>
+
+  <form id="search" role="search">
+    <svg class="glass" viewBox="0 0 18 18" aria-hidden="true">
+      
+      <circle cx="6.5" cy="6.5" r="5.3" fill="none" stroke="var(--muted)" stroke-width="2.3"/>
+      <line x1="11" y1="11" x2="17.2" y2="17.2" stroke="var(--muted)" stroke-width="2.8"/>
+    </svg>
+    <input type="search" id="q" placeholder="Search Google or type an address" autocomplete="off" autocapitalize="off" enterkeyhint="go" aria-label="Search Google or type an address">
+  </form>
+
+  <div class="tiles" id="tiles"></div>
+
+  <a class="about" href="../">Get Catweb for Windows</a>
+  <p class="hint">Hold a shortcut to remove it.</p>
+</main>
+
+<script>
+ 
+  const q = document.getElementById("q");
+  document.getElementById("search").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = q.value.trim();
+    if (!text) return;
+    const looksLikeAddress = !/\s/.test(text) && /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?(\/.*)?$/i.test(text);
+    location.href = looksLikeAddress
+      ? (/^https?:\/\//i.test(text) ? text : "https://" + text)
+      : "https://www.google.com/search?q=" + encodeURIComponent(text);
+  });
+
+ 
+  const DEFAULTS = ["youtube.com", "google.com", "tiktok.com", "discord.com", "reddit.com"];
+  const KEY = "catweb-start-shortcuts";
+  function load() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY));
+      if (Array.isArray(saved) && saved.every((s) => typeof s === "string")) return saved;
+    } catch (e) { 
+    return DEFAULTS.slice();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(shortcuts)); } catch (e) {} }
+  let shortcuts = load();
+
+  
+  function siteName(text) {
+    text = text.trim();
+    if (!/^[a-z]+:/i.test(text)) text = "https://" + text;
+    try {
+      const u = new URL(text);
+      if (u.protocol !== "https:" && u.protocol !== "http:") return null;  
+      return u.hostname.replace(/^www\./, "") || null;
+    } catch (e) { return null; }
+  }
+
+  const tilesEl = document.getElementById("tiles");
+  function badge(site) {
+    const b = document.createElement("span");
+    b.className = "badge";
+    b.textContent = site.charAt(0).toUpperCase();
+    
+
+    const img = new Image();
+    img.alt = "";
+    img.onload = () => { if (img.naturalWidth > 1) b.replaceChildren(img); };
+    img.src = "https://" + site + "/favicon.ico";
+    return b;
+  }
+  function render() {
+    tilesEl.replaceChildren();
+    shortcuts.forEach((site, i) => {
+      const a = document.createElement("a");
+      a.className = "tile";
+      a.href = "https://" + site;
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = site;
+      a.append(badge(site), name);
+     
+      let timer, held = false;
+      const remove = () => {
+        held = true;
+        if (confirm("Remove " + site + "?")) { shortcuts.splice(i, 1); save(); render(); }
+      };
+      a.addEventListener("touchstart", () => { held = false; timer = setTimeout(remove, 600); }, { passive: true });
+      a.addEventListener("touchend", () => clearTimeout(timer));
+      a.addEventListener("touchmove", () => clearTimeout(timer), { passive: true });
+      a.addEventListener("contextmenu", (e) => { e.preventDefault(); remove(); });
+      a.addEventListener("click", (e) => { if (held) e.preventDefault(); });
+      tilesEl.append(a);
+    });
+    if (shortcuts.length < 10) {  
+      const add = document.createElement("button");
+      add.className = "tile";
+      add.type = "button";
+      const b = document.createElement("span");
+      b.className = "badge";
+      b.textContent = "+";
+      const name = document.createElement("span");
+      name.className = "name";
+      name.textContent = "Add shortcut";
+      add.append(b, name);
+      add.addEventListener("click", () => {
+        const typed = prompt("Website address (like tiktok.com)");
+        if (!typed) return;
+        const site = siteName(typed);
+        if (!site) { alert("That doesn't look like a website address."); return; }
+        shortcuts.push(site);
+        save();
+        render();
+      });
+      tilesEl.append(add);
+    }
+  }
+  render();
+
+
+  const ROW = { idle: 0, happy: 1 };
+  const FRAME_MS = { idle: [2200, 320, 320, 140], happy: [200, 200, 200, 200] };  
+  const tuft = document.getElementById("tuft");
+  let mood = "idle", since = performance.now(), happyUntil = 0;
+  function setMood(m) { if (m !== mood) { mood = m; since = performance.now(); } }
+  tuft.addEventListener("mouseenter", () => setMood("happy"));
+  tuft.addEventListener("mouseleave", () => setMood("idle"));
+  tuft.addEventListener("click", () => { setMood("happy"); happyUntil = performance.now() + 1500; });
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  function tick(now) {
+    if (happyUntil && now > happyUntil && !tuft.matches(":hover")) { happyUntil = 0; setMood("idle"); }
+    const times = FRAME_MS[mood];
+    let t = (now - since) % times.reduce((a, b) => a + b), frame = 0;
+    while (t >= times[frame]) { t -= times[frame]; frame++; }
+    if (still.matches) frame = 0;
+    tuft.style.backgroundPosition = `${-frame * 80}px ${-ROW[mood] * 72}px`;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>
