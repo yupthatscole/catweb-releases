@@ -1,4 +1,4 @@
-## catweb 🐈
+## catweb :3
 
 meow
 
@@ -21,9 +21,9 @@ it’s purple, has a cat, blocks ads, and actually works (most of the time)
 
 check the releases tab for the latest version.
 
-currently v0.0.9 beta, windows only.
+currently v0.0.11 beta, windows only.
 
-also, if you found this repo without me sending it to you, how tf did you get here??
+plz share i need more downloads 
 
 # IMPORTANT PLEASE READ
 
